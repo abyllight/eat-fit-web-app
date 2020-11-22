@@ -45,7 +45,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Заказы</a>
+                                <a class="nav-link" href="{{ route('admin.orders') }}">Заказы</a>
                             </li>
 
                             <li class="nav-item">
@@ -108,5 +108,7 @@
             @yield('content')
         </main>
     </div>
+
+    @yield('js')
 </body>
 </html>

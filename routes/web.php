@@ -33,4 +33,8 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::post('/courier/{id}', [App\Http\Controllers\CourierController::class, 'update'])->name('courier.update');
     Route::patch('/courier/{id}', [App\Http\Controllers\CourierController::class, 'updatePass'])->name('courier.update.pass');
     Route::delete('/courier/{id}', [App\Http\Controllers\CourierController::class, 'delete'])->name('courier.delete');
+
+    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders');
+    Route::get('/orders/amo', [App\Http\Controllers\OrderController::class, 'getOrders'])->name('orders.amo');
+
 });
