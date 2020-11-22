@@ -18,7 +18,8 @@
         "laravel/ui": "^3.1",
         "linkprofit-cpa/amocrm-api": "^0.7.3",
         "ext-curl": "*",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

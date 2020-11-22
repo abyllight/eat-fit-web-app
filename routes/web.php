@@ -37,4 +37,7 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders');
     Route::get('/orders/amo', [App\Http\Controllers\OrderController::class, 'getOrders'])->name('orders.amo');
 
+    Route::get('/geo', [App\Http\Controllers\GeoController::class, 'index'])->name('geo');
+    Route::get('/geo/geocode', [App\Http\Controllers\GeoController::class, 'geocode'])->name('geocode');
+    Route::get('/geo/interval', [App\Http\Controllers\GeoController::class, 'interval'])->name('interval');
 });

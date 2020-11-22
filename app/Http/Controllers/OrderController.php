@@ -147,9 +147,7 @@ class OrderController extends Controller
             'yaddress2_old' => null
         ]);
 
-        $orders = Order::where('active', true)->orderBy('name')->get();
-
-        return redirect()->route('admin.orders', ['orders' => $orders]);
+        return redirect()->route('admin.orders');
     }
 
     public function createOrder(Order $order, array $fields = [], bool $is_weekend = false)

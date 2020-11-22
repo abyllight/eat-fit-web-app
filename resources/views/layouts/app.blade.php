@@ -49,7 +49,7 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Гео</a>
+                                <a class="nav-link" href="{{ route('admin.geo') }}">Гео</a>
                             </li>
 
                             <li class="nav-item">
