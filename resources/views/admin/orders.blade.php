@@ -41,6 +41,7 @@
                     <th scope="col">Время2</th>
                     <th scope="col">Яндекс</th>
                     <th scope="col">Яндекс2</th>
+                    <th scope="col">Интервал</th>
                 </tr>
             </thead>
             <tbody id="table">
@@ -73,6 +74,7 @@
                             <p>{{ $order->yaddress2 }}</p>
                             <small class="text-danger">{{ $order->yaddress2_old }}</small>
                         </td>
+                        <td>{{ $order->interval }}</td>
                     </tr>
                 @endforeach
             </tbody>

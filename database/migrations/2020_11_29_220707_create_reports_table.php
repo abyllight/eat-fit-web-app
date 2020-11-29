@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateWeeksTable extends Migration
+class CreateReportsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,10 @@ class CreateWeeksTable extends Migration
      */
     public function up()
     {
-        Schema::create('weeks', function (Blueprint $table) {
+        Schema::create('reports', function (Blueprint $table) {
             $table->id();
-            $table->boolean('is_weekend')->default(false);
-            $table->string('name')->default('Будни');
-            $table->longText('whatsapp_message')->nullable();
+            $table->integer('order_id');
+            $table->integer('courier_id');
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ class CreateWeeksTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('weeks');
+        Schema::dropIfExists('reports');
     }
 }

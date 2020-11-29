@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\Week;
 use Illuminate\Http\Request;
 
 class GeoController extends Controller
@@ -14,22 +15,35 @@ class GeoController extends Controller
 
     public function index()
     {
-        $orders = Order::where('active', true)->where('lat1', null)->orWhere('lat2', null)->orderBy('name', 'asc')->get();
+        $is_weekend = Week::find(1)->is_weekend;
+
+        $orders = Order::where('active', true)->where('lat1', null)->orderBy('name', 'asc')->get();
+
+        if ($is_weekend) {
+            $orders = Order::where('active', true)->where('lat2', null)->orderBy('name', 'asc')->get();
+        }
 
         return view('admin.geo', ['orders' => $orders]);
     }
 
     public function geocode()
     {
-        $this->geocode_week();
-        $this->geocode_weekend();
+        $is_weekend = Week::find(1)->is_weekend;
 
-        return redirect()->route('admin.geo')->with('status', 'Адреса успешно геокодированы!');
+        if ($is_weekend) {
+            return $this->geocode_weekend();
+        }else {
+            return $this->geocode_week();
+        }
     }
 
     public function geocode_week()
     {
         $orders = Order::where('active',true)->where('lat1', null)->get();
+
+        if (count($orders) === 0) {
+            return redirect()->back()->with('status', 'Все адреса уже геокодированы!');
+        }
 
         $link = 'https://geocode-maps.yandex.ru/1.x/?apikey=df752091-7d67-4202-af5c-322b09947c85&geocode=';
 
@@ -46,6 +60,8 @@ class GeoController extends Controller
 
                 $order->lat1 = $lat_lng[1];
                 $order->lng1 = $lat_lng[0];
+                $order->lat  = $lat_lng[1];
+                $order->lng  = $lat_lng[0];
 
                 if($order->yaddress1 === $order->yaddress2){
                     $order->lat2 = $lat_lng[1];
@@ -56,12 +72,16 @@ class GeoController extends Controller
             }
         }
 
-        return true;
+        return redirect()->route('admin.geo')->with('status', 'Адреса успешно геокодированы1!');
     }
 
     public function geocode_weekend()
     {
         $orders = Order::where('active',true)->where('lat2', null)->get();
+
+        if (count($orders) === 0) {
+            return redirect()->back()->with('status', 'Все адреса уже геокодированы!');
+        }
 
         $link = 'https://geocode-maps.yandex.ru/1.x/?apikey=df752091-7d67-4202-af5c-322b09947c85&geocode=';
 
@@ -78,29 +98,36 @@ class GeoController extends Controller
 
                 $order->lat2 = $lat_lng[1];
                 $order->lng2 = $lat_lng[0];
+                $order->lat  = $lat_lng[1];
+                $order->lng  = $lat_lng[0];
+
                 $order->save();
             }
         }
 
-        return true;
+        return redirect()->route('admin.geo')->with('status', 'Адреса успешно геокодированы2!');
     }
 
     public function interval()
     {
-        Order::where('active',true)->update([
+        Order::where('active', true)->update([
             'interval' => null
         ]);
 
-        $orders = Order::where('active',true)->where('time1', '!=', null)->orderBy('time1')->get()->groupBy(['time1']);
+        $orders = Order::where('active', true)->orderBy('time')->get()->groupBy(['time']);
+
+        if (count($orders) === 0) {
+            return redirect()->back()->with('error', 'Нет заказов с заполненым временем!');
+        }
 
         $intervals = [
-            [630,700],
-            [700,730],
-            [730,800],
-            [800,830],
-            [830,900],
-            [900,930],
-            [930,1000]
+            [630, 700],
+            [700, 730],
+            [730, 800],
+            [800, 830],
+            [830, 900],
+            [900, 930],
+            [930, 1000]
         ];
 
         $checkint = collect();
@@ -113,11 +140,11 @@ class GeoController extends Controller
             $dfrom  = $dfrom ?? null;
             $dto    = $dto ?? null;
 
-            for($i=0; $i < 7; $i++) {
+            for($i = 0; $i < count($intervals); $i++) {
 
                 if($dfrom >= $intervals[$i][0] && $dfrom < $intervals[$i][1]) {
 
-                    for ($j = $i; $j < 7; $j++){
+                    for ($j = $i; $j < count($intervals); $j++){
 
                         if($dto > $intervals[$j][0] && $dto <= $intervals[$j][1]) {
 
@@ -142,25 +169,31 @@ class GeoController extends Controller
 
         foreach ($checkint->groupBy('time') as $key => $value) {
 
-            $orders = Order::where('active', true)->where('time1', $value[0]['time'])->get();
+            $orders = Order::where('active', true)->where('time', $value[0]['time'])->get();
+
             foreach($orders as $val) {
 
                 $almost = collect();
 
                 foreach ($value as $key => $i) {
 
-                    $uzhe = count(Order::where('active', true)->where('interval', $i['i'])->get());
+                    $uzhe = Order::where('active', true)->where('interval', $i['i'])->count();
+
                     $almost->push([
                         'i'   => $i['i'],
                         'num' => $uzhe
                     ]);
                 }
 
-                $min           = $almost->where('position', $almost->min('position'))->last()['i'];
+                $min           = $almost->where('num', $almost->min('num'))->last()['i'];
                 $val->interval = $min;
                 $val->save();
             }
         }
+
+        Order::where('active', true)->whereNull('interval')->update([
+            'interval' => 0
+        ]);
 
         return redirect()->back()->with('status', 'Успешно отсортировано!');
     }

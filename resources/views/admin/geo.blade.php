@@ -40,8 +40,8 @@
                 <th scope="col">Имя</th>
                 <th scope="col">Яндекс</th>
                 <th scope="col">Статус</th>
-                <th scope="col">Яндекс2</th>
-                <th scope="col">Статус</th>
+                <th scope="col">Время</th>
+                <th scope="col">Интервал</th>
             </tr>
             </thead>
             <tbody id="table">
@@ -49,22 +49,16 @@
                 <tr>
                     <th scope="row">{{ $key + 1 }}</th>
                     <td>{{ $order->name }}</td>
-                    <td>{{ $order->yaddress1 }}</td>
+                    <td>{{ $order->yaddress }}</td>
                     <td>
-                        @if($order->lat1)
+                        @if($order->lat)
                             <span class="badge badge-success">geo</span>
                         @else
                             <span class="badge badge-danger">geo</span>
                         @endif
                     </td>
-                    <td>{{ $order->yaddress2 }}</td>
-                    <td>
-                        @if($order->lat2)
-                            <span class="badge badge-success">geo</span>
-                        @else
-                            <span class="badge badge-danger">geo</span>
-                        @endif
-                    </td>
+                    <td>{{ $order->time }}</td>
+                    <td>{{ $order->interval }}</td>
                 </tr>
             @endforeach
             </tbody>

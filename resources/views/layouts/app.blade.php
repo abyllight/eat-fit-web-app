@@ -10,7 +10,7 @@
     <title>EAT&FIT APP</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('css/bootstrap-multiselect.css')}}">
 </head>
 <body>
     <div id="app">
@@ -49,19 +50,15 @@
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('admin.geo') }}">Гео</a>
+                                <a class="nav-link" href="{{ route('admin.geo') }}">Гео/Интервал</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Интервал</a>
+                                <a class="nav-link" href="{{ route('admin.map') }}">Карта</a>
                             </li>
 
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Карта</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('home') }}">Список</a>
+                                <a class="nav-link" href="{{ route('admin.list') }}">Список</a>
                             </li>
 
                             <li class="nav-item">
@@ -109,6 +106,6 @@
         </main>
     </div>
 
-    @yield('js')
+    @yield('js_bottom')
 </body>
 </html>

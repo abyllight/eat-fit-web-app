@@ -22,9 +22,13 @@ Auth::routes([
 ]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::post('/home', [App\Http\Controllers\HomeController::class, 'sendWhatsapp'])->name('whatsapp');
 
 Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
-    Route::get('/home', [App\Http\Controllers\HomeController::class, 'admin'])->name('home');
+    Route::get('/home', [App\Http\Controllers\AdminController::class, 'index'])->name('home');
+    Route::post('/home', [App\Http\Controllers\AdminController::class, 'setWeek'])->name('home.week');
+    Route::get('/whatsapp', [App\Http\Controllers\AdminController::class, 'showWhatsapp'])->name('whatsapp');
+    Route::post('/whatsapp', [App\Http\Controllers\AdminController::class, 'updateWhatsappText'])->name('whatsapp.update');
 
     Route::get('/couriers', [App\Http\Controllers\CourierController::class, 'index'])->name('couriers');
     Route::get('/courier/', [App\Http\Controllers\CourierController::class, 'create'])->name('courier.create');
@@ -40,4 +44,11 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/geo', [App\Http\Controllers\GeoController::class, 'index'])->name('geo');
     Route::get('/geo/geocode', [App\Http\Controllers\GeoController::class, 'geocode'])->name('geocode');
     Route::get('/geo/interval', [App\Http\Controllers\GeoController::class, 'interval'])->name('interval');
+
+    Route::get('/map', [App\Http\Controllers\MapController::class, 'index'])->name('map');
+    Route::post('/map', [App\Http\Controllers\MapController::class, 'filter'])->name('map.filter');
+
+    Route::get('/list', [App\Http\Controllers\ListController::class, 'index'])->name('list');
+    Route::post('/list', [App\Http\Controllers\ListController::class, 'updateList'])->name('list.update');
+    Route::get('/list/excel', [App\Http\Controllers\ListController::class, 'export'])->name('list.export');
 });

@@ -29,7 +29,7 @@ class OrderController extends Controller
     {
         $amo = new AmoController();
 
-        $v_rabote = $amo->amo_leads(16566964, 300) ?? [];
+        $v_rabote = $amo->amo_leads(16566964, 400) ?? [];
         $probnyi  = $amo->amo_leads(16536847, 100) ?? [];
 
         return array_merge($v_rabote, $probnyi);
@@ -43,7 +43,7 @@ class OrderController extends Controller
             return redirect()->route('admin.orders')->with('error', 'Не удалось получить данные');
         }
 
-        $is_weekend = Week::find(1)->isWeekend;
+        $is_weekend = Week::find(1)->is_weekend;
 
         foreach ($orders as $order) {
 
@@ -114,7 +114,7 @@ class OrderController extends Controller
             $existing_order = Order::where('amo_id', $order['id'])->orWhere('name', $order['name'])->first();
 
             if ($existing_order) {
-                $this->createOrder($existing_order, $fields, $is_weekend);
+                $this->updateOrder($existing_order, $fields, $is_weekend);
             }else {
                 Order::create([
                     'amo_id'    => $order['id'],
@@ -141,16 +141,18 @@ class OrderController extends Controller
         Order::whereNull('active')->update([
             'position'      => null,
             'interval'      => null,
+            'time_old'     => null,
             'time1_old'     => null,
             'time2_old'     => null,
+            'yaddress_old' => null,
             'yaddress1_old' => null,
             'yaddress2_old' => null
         ]);
 
-        return redirect()->route('admin.orders');
+        return redirect()->route('admin.orders')->with('status', 'Данные получены!');
     }
 
-    public function createOrder(Order $order, array $fields = [], bool $is_weekend = false)
+    public function updateOrder(Order $order, array $fields = [], bool $is_weekend = false)
     {
         $order->amo_id   = $fields['amo_id'];
         $order->name     = $fields['name'];
@@ -215,10 +217,12 @@ class OrderController extends Controller
             $order->yaddress2_old = null;
         }
 
-        $order->lat = $is_weekend ? $order->lat2 : $order->lat1;
-        $order->lng = $is_weekend ? $order->lng2 : $order->lng1;
-        $order->courier_id = $is_weekend ? $order->courier2_id : $order->courier1_id;
-        $order->active  = true;
+        $order->lat          = $is_weekend ? $order->lat2 : $order->lat1;
+        $order->lng          = $is_weekend ? $order->lng2 : $order->lng1;
+        $order->time_old     = $is_weekend ? $order->time2_old : $order->time1_old;
+        $order->yaddress_old = $is_weekend ? $order->yaddress2_old : $order->yaddress1_old;
+        $order->courier_id   = $is_weekend ? $order->courier2_id : $order->courier1_id;
+        $order->active       = true;
         $order->save();
     }
 }

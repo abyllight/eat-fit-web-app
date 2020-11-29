@@ -46,12 +46,12 @@ class CourierController extends Controller
         $courier=new User;
 
         $courier->first_name = $request['first_name'];
-        $courier->last_name = $request['last_name'];
-        $courier->phone = $request['phone'];
+        $courier->last_name  = $request['last_name'];
+        $courier->phone      = $request['phone'];
         $courier->car_number = $request['car_number'];
-        $courier->email = $request['email'];
-        $courier->is_admin = false;
-        $courier->password = Hash::make($request['password']);
+        $courier->email      = $request['email'];
+        $courier->is_admin   = false;
+        $courier->password   = Hash::make($request['password']);
         $courier->save();
 
         return redirect()->route('admin.couriers')->with('status', 'Курьер добавлен!');
@@ -68,10 +68,10 @@ class CourierController extends Controller
         ]);
 
         $courier->first_name = $request['first_name'];
-        $courier->last_name = $request['last_name'];
-        $courier->phone = $request['phone'];
+        $courier->last_name  = $request['last_name'];
+        $courier->phone      = $request['phone'];
         $courier->car_number = $request['car_number'];
-        $courier->email = $request['email'];
+        $courier->email      = $request['email'];
         $courier->save();
 
         return redirect()->route('admin.couriers')->with('status', 'Данные курьера изменены!');
@@ -80,10 +80,10 @@ class CourierController extends Controller
     public function updatePass(Request $request, $id)
     {
         $request->validate([
-            'password'         => 'required|min:6|confirmed',
+            'password' => 'required|min:6|confirmed',
         ]);
 
-        $courier = User::find($id);
+        $courier           = User::find($id);
         $courier->password = Hash::make($request['password']);
 
         $courier->save();

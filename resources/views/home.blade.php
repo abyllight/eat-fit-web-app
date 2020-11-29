@@ -1,23 +1,38 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Dashboard') }}</div>
+<div class="container-fluid">
+    <div class="row">
+        @foreach($orders as $key => $order)
+            <div class="col-sm-12 col-md-4 col-lg-3 my-2">
+                <div class="card" id="{{ $order->id }}">
+                    <div class="card-body">
 
-                <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="card-title"><strong>{{ $order->name }}</strong></h4>
+                            <h4 class="card-title"><strong>{{ $key + 1 }}</strong></h4>
                         </div>
-                    @endif
 
-                    {{ __('You are logged in!') }}
+                        <div class="d-flex justify-content-between align-items-center">
+
+                            <h6 class="card-subtitle mb-2 text-muted">{{ $order->time }}</h6>
+
+                            <h5 class="card-subtitle">{!! $order->getColourTag() !!}</h5>
+                        </div>
+
+                        <hr>
+
+                        <p class="card-text lead">{{ $order->addition }}</p>
+                        <p class="card-text">{{ $order->address }}</p>
+
+                        <hr>
+
+                        <a href="tel:{{ $order->phone }}" class="card-link">Телефон</a>
+                        <a href="https://wa.me/{{ $order->whatsapp }}?text={{ urlencode('Здравствуйте! Это, ' . Auth::user()->first_name . ' - EAT&FIT') }}" class="card-link">Whatsapp</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endforeach
     </div>
 </div>
 @endsection

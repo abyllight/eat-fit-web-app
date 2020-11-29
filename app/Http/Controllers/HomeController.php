@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use Illuminate\Support\Facades\Auth;
+
 class HomeController extends Controller
 {
     /**
@@ -21,11 +24,18 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+
+        $orders = Order::where('courier_id', Auth::user()->id)
+                        ->where('active', true)
+                        ->orderBy('position')
+                        ->get();
+
+
+        return view('home', ['orders' => $orders]);
     }
 
-    public function admin()
+    public function sendWhatsapp(int $order_id)
     {
-        return view('admin.home');
+        dd($order_id);
     }
 }
