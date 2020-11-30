@@ -29,6 +29,8 @@
 
                         <a href="tel:{{ $order->phone }}" class="card-link">Телефон</a>
                         <a href="https://wa.me/{{ $order->whatsapp }}?text={{ urlencode('Здравствуйте! Это, ' . Auth::user()->first_name . ' - EAT&FIT') }}" class="card-link">Whatsapp</a>
+                        <a href="dgis://2gis.ru/routeSearch/rsType/car/to/{{ $order->lng }},{{ $order->lat }}" class="card-link">2GIS</a>
+                        <a href="yandexmaps://maps.yandex.ru/?rtext=~{{ $order->lat }},{{ $order->lng }}" class="card-link">Yndx</a>
                     </div>
                 </div>
             </div>
