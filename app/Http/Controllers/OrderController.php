@@ -52,6 +52,8 @@ class OrderController extends Controller
                 'name'      => null,
                 'tag'       => null,
                 'size'      => null,
+                'day'       => null,
+                'course'    => null,
                 'phone'     => null,
                 'whatsapp'  => null,
                 't1'        => null,
@@ -68,40 +70,60 @@ class OrderController extends Controller
 
             $fields['amo_id'] = $order['id'];
             $fields['name']   = $order['name'];
-
+            //328089 day
+            //321235 course
             foreach ($order['custom_fields'] as $key => $field) {
                 switch ($field['id']) {
-                    case '373971'://Время
+                    //День
+                    case '328089':
+                        $fields['day'] = $field["values"][0]["value"];
+                        break;
+                    //Курс
+                    case '321235':
+                        $fields['course'] = $field["values"][0]["value"];
+                        break;
+                    //Время
+                    case '373971':
                         $fields['t1'] = $field["values"][0]["value"];
                         break;
-                    case '478705'://Время доп
+                    //Время доп
+                    case '478705':
                         $fields['t2'] = $field["values"][0]["value"];
                         break;
-                    case '321281'://Логистика
+                    //Логистика
+                    case '321281':
                         $fields['addition'] = $field["values"][0]["value"];
                         break;
-                    case '478767'://Яндекс
+                    //Яндекс
+                    case '478767':
                         $fields['y1'] = $field["values"][0]["value"];
                         break;
-                    case '478769'://Яндекс доп
+                    //Яндекс доп
+                    case '478769':
                         $fields['y2'] = $field["values"][0]["value"];
                         break;
-                    case '478763'://Адрес
+                    //Адрес
+                    case '478763':
                         $fields['a1'] = $field["values"][0]["value"];
                         break;
-                    case '478765'://Адрес доп
+                    //Адрес доп
+                    case '478765':
                         $fields['a2'] = $field["values"][0]["value"];
                         break;
-                    case '478771'://Телефон
+                    //Телефон
+                    case '478771':
                         $fields['phone'] = $field["values"][0]["value"];
                         break;
-                    case '478851'://Ватсап
+                    //Ватсап
+                    case '478851':
                         $fields['whatsapp'] = $field["values"][0]["value"];
                         break;
-                    case '321197'://Тип
+                    //Тип
+                    case '321197':
                         $fields['tag'] = $field["values"][0]["value"];
                         break;
-                    case '327953'://Размер
+                    //Размер
+                    case '327953':
                         $fields['size'] = $field["values"][0]["value"];
                         break;
                 }
@@ -121,6 +143,8 @@ class OrderController extends Controller
                     'name'      => $order['name'],
                     'tag'       => $fields['tag'],
                     'size'      => $fields['size'],
+                    'day'       => $fields['day'],
+                    'course'    => $fields['course'],
                     'phone'     => $fields['phone'],
                     'whatsapp'  => $fields['whatsapp'],
                     'time'      => $fields['tb'],
@@ -141,12 +165,13 @@ class OrderController extends Controller
         Order::whereNull('active')->update([
             'position'      => null,
             'interval'      => null,
-            'time_old'     => null,
+            'time_old'      => null,
             'time1_old'     => null,
             'time2_old'     => null,
-            'yaddress_old' => null,
+            'yaddress_old'  => null,
             'yaddress1_old' => null,
-            'yaddress2_old' => null
+            'yaddress2_old' => null,
+            'day_old'       => null
         ]);
 
         return redirect()->route('admin.orders')->with('status', 'Данные получены!');
@@ -158,6 +183,8 @@ class OrderController extends Controller
         $order->name     = $fields['name'];
         $order->tag      = $fields['tag'];
         $order->size     = $fields['size'];
+        $order->day      = $fields['day'];
+        $order->course   = $fields['course'];
         $order->phone    = $fields['phone'];
         $order->whatsapp = $fields['whatsapp'];
         $order->time     = $fields['tb'];

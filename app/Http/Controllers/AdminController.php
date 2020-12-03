@@ -77,4 +77,20 @@ class AdminController extends Controller
 
         return redirect()->route('admin.home')->with('status', 'Сообщение изменено!');
     }
+
+    public function showDays()
+    {
+        return view();
+    }
+
+    public function incrementDay()
+    {
+
+    }
+
+    public function showShift()
+    {
+
+    }
+
 }

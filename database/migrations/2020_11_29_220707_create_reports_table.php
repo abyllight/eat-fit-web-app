@@ -17,6 +17,11 @@ class CreateReportsTable extends Migration
             $table->id();
             $table->integer('order_id');
             $table->integer('courier_id');
+            $table->string('payment')->nullable();
+            $table->string('payment_method')->nullable();
+            $table->longText('comment')->nullable();
+            $table->dateTime('delivered_at')->nullable();
+            $table->dateTime('reported_at')->nullable();
             $table->timestamps();
         });
     }

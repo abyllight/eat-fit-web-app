@@ -117,7 +117,7 @@ class ListController extends Controller
                         case 'L':
                             ++$l;
                             break;
-                        case 'XL':
+                        case '"XL':
                             ++$xl;
                             break;
                     }

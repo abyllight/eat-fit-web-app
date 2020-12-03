@@ -21,6 +21,9 @@ class CreateOrdersTable extends Migration
             $table->string('tag')->nullable();
             $table->string('size')->nullable();
             $table->string('phone')->nullable();
+            $table->integer('day')->nullable();
+            $table->integer('day_old')->nullable();
+            $table->integer('course')->nullable();
             $table->string('whatsapp')->nullable();
             $table->string('time')->nullable();
             $table->string('time1')->nullable();

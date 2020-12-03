@@ -22,7 +22,10 @@ Auth::routes([
 ]);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::post('/home', [App\Http\Controllers\HomeController::class, 'sendWhatsapp'])->name('whatsapp');
+Route::post('/home', [App\Http\Controllers\HomeController::class, 'setStatusToDelivered'])->name('deliver');
+Route::get('/home/{id}', [App\Http\Controllers\HomeController::class, 'showReport'])->name('report');
+Route::post('/home/{id}', [App\Http\Controllers\HomeController::class, 'createReport'])->name('report.create');
+
 
 Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/home', [App\Http\Controllers\AdminController::class, 'index'])->name('home');
@@ -51,4 +54,7 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/list', [App\Http\Controllers\ListController::class, 'index'])->name('list');
     Route::post('/list', [App\Http\Controllers\ListController::class, 'updateList'])->name('list.update');
     Route::get('/list/excel', [App\Http\Controllers\ListController::class, 'export'])->name('list.export');
+
+    Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports');
+    Route::get('/reports/excel', [App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
 });

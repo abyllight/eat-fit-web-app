@@ -15,6 +15,8 @@ class Order extends Model
         'name',
         'tag',
         'size',
+        'day',
+        'course',
         'phone',
         'whatsapp',
         'time',
@@ -32,6 +34,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'courier_id', 'id');
+    }
+
+    public function reports()
+    {
+        return $this->hasMany('App\Models\Report', 'order_id', 'id');
     }
 
     public function getTag()
@@ -70,5 +77,19 @@ class Order extends Model
         }else {
             return '<span class="badge badge-secondary">Не изменен</span>';
         }
+    }
+
+    public function hasReportToday()
+    {
+        $report = $this->reports()->whereDate('created_at', Carbon::today()->toDateString())->first();
+
+        return $report ? true : false;
+    }
+
+    public function hasDeliveredToday()
+    {
+        $report = $this->reports()->whereDate('created_at', Carbon::today()->toDateString())->first();
+
+        return $report && $report->delivered_at ? true : false;
     }
 }

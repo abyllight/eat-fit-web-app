@@ -2,11 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use http\Env\Response;
 use Illuminate\Http\Request;
 
 class AmoController extends Controller
 {
+    /*
+     * id Статусы
+     *  142 => Успешно реализовано
+     *  16536847 => Пробная доставка
+     *  16566964 => В работе
+     *  27248140 => Доставлено
+     *
+     *
+     * */
+
     public function amo_curl($link, $method = 'POST', $array = [])
     {
         $curl = curl_init();
@@ -74,5 +83,77 @@ class AmoController extends Controller
         }
 
         return [];
+    }
+
+    public function apiUpdate()
+    {
+        /*$subdomain = env('AMO_SUBDOMAIN', '');
+        $link = 'https://' . $subdomain . '.amocrm.ru/private/api/v2/json/leads/set';
+
+        $leads['request']['leads']['update'] = array(
+            array(
+                'id'=>3698752,
+                'name'=>'Deal with a monkey',
+                //'date_create'=>1298904164, //optional
+                'last_modified'=>1375110129,
+                'status_id'=>142,
+                'price'=>602041,
+                'responsible_user_id'=>109999,
+                'custom_fields'=>array(
+                    array(
+                        'id'=>427493, # id поля типа numeric
+                        'values'=>array(
+                            array(
+                                'value'=>65535 # сюда передается только числовое значение (float, int). Значения float передаются с точкой, например: 27.3
+                            )
+                        )
+                    ),
+                    array(
+                        'id'=>427494, # id поля типа checkbox
+                        'values'=>array(
+                            array(
+                                'value'=>1 # допустимые значения 1 или 0
+                            )
+                        )
+                    ),
+                    array(
+                        'id'=>427495, #id поля типа select
+                        'values'=>array(
+                            array(
+                                'value'=>1240662 # одно из enum значений
+                            )
+                        )
+                    )
+                )
+            ),
+            array(
+                'id'=>3698754,
+                'name'=>'Keep Calm',
+                //'date_create'=>1298904164, //optional
+                'last_modified'=>1375110129,
+                'status_id'=>7087607,
+                'price'=>1008200,
+                'responsible_user_id'=>109999,
+                'custom_fields'=>array(
+                    array(
+                        #Нестандартное дополнительное поле типа "мультисписок", которое мы создали
+                        'id'=>426106,
+                        'values'=>array(
+                            1237755,
+                            1237757
+                        )
+                    )
+                )
+            )
+        );
+
+        if ($this->amo_auth()) {
+
+            $data = $this->amo_curl($link, 'POST', $leads);
+
+            return $data['data']['_embedded']['items'];
+        }
+
+        return [];*/
     }
 }

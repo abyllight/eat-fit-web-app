@@ -5,7 +5,7 @@
     <div class="row">
         @foreach($orders as $key => $order)
             <div class="col-sm-12 col-md-4 col-lg-3 my-2">
-                <div class="card" id="{{ $order->id }}">
+                <div class="card" id="o{{ $order->id }}">
                     <div class="card-body">
 
                         <div class="d-flex justify-content-between align-items-center">
@@ -31,6 +31,26 @@
                         <a href="https://wa.me/{{ $order->whatsapp }}?text={{ urlencode('Здравствуйте! Это, ' . Auth::user()->first_name . ' - EAT&FIT') }}" class="card-link">Whatsapp</a>
                         <a href="dgis://2gis.ru/routeSearch/rsType/car/to/{{ $order->lng }},{{ $order->lat }}" class="card-link">2GIS</a>
                         <a href="yandexmaps://maps.yandex.ru/?rtext=~{{ $order->lat }},{{ $order->lng }}" class="card-link">Yndx</a>
+
+                        <hr>
+
+                        <form class="form-inline" method="POST" action="{{ route('deliver') }}">
+                            @csrf
+                            <input type="hidden" name="order" value="{{ $order->id }}">
+                            <input type="hidden" name="amo" value="{{ $order->amo_id }}">
+                            <button class="btn btn-primary mr-3" type="submit" @if($order->hasDeliveredToday()) disabled @endif>Еду</button>
+                            <a class="btn btn-primary" href="{{ route('report', $order->id) }}">Отчет</a>
+                        </form>
+
+                    </div>
+
+                    <div class="card-footer @if($order->hasReportToday() && $order->hasDeliveredToday()) bg-success @else bg-secondary @endif">
+                        <small class="text-white mr-5"> Доставлено:
+                            {!! $order->hasDeliveredToday() ? '<span class="badge badge-light">OK</span>' : '' !!}
+                        </small>
+                        <small class="text-white"> Отчет:
+                            {!! $order->hasReportToday() ? '<span class="badge badge-light">OK</span>' : '' !!}
+                        </small>
                     </div>
                 </div>
             </div>
