@@ -3,11 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Report;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReportController extends Controller
@@ -17,9 +15,20 @@ class ReportController extends Controller
         $this->middleware('admin');
     }
 
-    public function index()
+    public function index($date = null)
     {
-        return view('admin.reports');
+        if (!$date) {
+            $date = Report::latest()->first()->created_at->format('Y-m-d');
+        }
+
+        $reports = Report::whereDate('created_at', $date)->get()->groupBy('courier_id');
+
+        return view('admin.reports', ['reports' => $reports]);
+    }
+
+    public function filter(Request $request)
+    {
+        return $this->index($request['date']);
     }
 
     public function export($date = '2020-12-01')

@@ -36,7 +36,7 @@
             <div>
                 <h3 class="mt-3">{{ $order[0]->user->first_name }} - {{ count($order) }}</h3>
                 <table class="table table-bordered table-sortable">
-                    <thead id="{{ $order[0]->courier_id }}">
+                    <thead id="{{ $order[0]->courier_id }}" class="thead-light">
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Имя</th>

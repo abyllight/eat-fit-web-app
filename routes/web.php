@@ -56,5 +56,6 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/list/excel', [App\Http\Controllers\ListController::class, 'export'])->name('list.export');
 
     Route::get('/reports', [App\Http\Controllers\ReportController::class, 'index'])->name('reports');
+    Route::post('/reports', [App\Http\Controllers\ReportController::class, 'filter'])->name('reports.filter');
     Route::get('/reports/excel', [App\Http\Controllers\ReportController::class, 'export'])->name('reports.export');
 });
