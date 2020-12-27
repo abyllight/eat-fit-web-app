@@ -29,23 +29,43 @@ class OrderController extends Controller
     {
         $amo = new AmoController();
 
-        $v_rabote = $amo->amo_leads(16566964, 400) ?? [];
-        $probnyi  = $amo->amo_leads(16536847, 100) ?? [];
+        $v_rabote = $amo->getAmoLeads(16566964, 400);
 
-        return array_merge($v_rabote, $probnyi);
+        if (!$v_rabote['status']) {
+            return $v_rabote;
+        }
+
+        $v_rabote = $v_rabote['content']['response']['leads'];
+
+        $probnyi  = $amo->getAmoLeads(16536847, 100);
+
+        if (!$probnyi['status']) {
+            return $probnyi;
+        }
+
+        $probnyi = $probnyi['content']['response']['leads'];
+
+        $array = array_merge($v_rabote, $probnyi);
+
+        return [
+            'status' => true,
+            'data'   => $array
+        ];
     }
 
     public function getOrders()
     {
         $orders = $this->fetchLeads();
 
-        if (empty($orders)) {
-            return redirect()->route('admin.orders')->with('error', 'Не удалось получить данные');
+        if (!$orders['status']) {
+            return redirect()->route('admin.orders')->with('error', $orders['message'] . ', ' . $orders['code']);
         }
 
         $is_weekend = Week::find(1)->is_weekend;
 
-        foreach ($orders as $order) {
+        Order::where('active', true)->update(['active' => null]);
+
+        foreach ($orders['data'] as $order) {
 
             $fields = [
                 'amo_id'    => null,
@@ -70,8 +90,7 @@ class OrderController extends Controller
 
             $fields['amo_id'] = $order['id'];
             $fields['name']   = $order['name'];
-            //328089 day
-            //321235 course
+
             foreach ($order['custom_fields'] as $key => $field) {
                 switch ($field['id']) {
                     //День

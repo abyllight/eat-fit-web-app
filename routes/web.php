@@ -33,6 +33,8 @@ Route::prefix('/admin')->name('admin.')->middleware('admin')->group(function (){
     Route::get('/whatsapp', [App\Http\Controllers\AdminController::class, 'showWhatsapp'])->name('whatsapp');
     Route::post('/whatsapp', [App\Http\Controllers\AdminController::class, 'updateWhatsappText'])->name('whatsapp.update');
 
+    Route::get('/days', [App\Http\Controllers\AdminController::class, 'showDays'])->name('days');
+
     Route::get('/couriers', [App\Http\Controllers\CourierController::class, 'index'])->name('couriers');
     Route::get('/courier/', [App\Http\Controllers\CourierController::class, 'create'])->name('courier.create');
     Route::post('/courier/', [App\Http\Controllers\CourierController::class, 'store'])->name('courier.store');

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -44,7 +44,6 @@
                         <th scope="col">Phone</th>
                         <th scope="col">Время</th>
                         <th scope="col">Адрес</th>
-                        <th scope="col">Comment</th>
                     </tr>
                     </thead>
 
@@ -52,27 +51,14 @@
                         <tbody style="border: 1px solid grey">
                         <tr class="r" id="{{ $value->id }}">
                             <td id="{{ $value->id }}">{{ $v+1 }}</td>
-                            @switch($value->tag)
-                                @case('Select'))
-                                    <td class="table-success"><strong>{{ $value->name }}</strong></td>
-                                    <td class="table-success"><strong>{{ $value->getTag() }}</strong></td>
-                                    @break
-                                @case('Daily'))
-                                    <td class="table-danger"><strong>{{ $value->name }}</strong></td>
-                                    <td class="table-danger"><strong>{{ $value->getTag() }}</strong></td>
-                                    @break
-                                @case('Lite')
-                                    <td class="table-warning"><strong>{{ $value->name }}</strong></td>
-                                    <td class="table-warning"><strong>{{ $value->getTag() }}</strong></td>
-                                    @break
-                                @default
-                                    <td class="table-warning"><strong>{{ $value->name }}</strong></td>
-                                    <td class="table-warning"><strong>{{ $value->getTag() }}</strong></td>
-                            @endswitch
+                            <td {!! $value->getColourTd() !!}><strong>{{ $value->name }}</strong></td>
+                            <td {!! $value->getColourTd() !!}><strong>{{ $value->getTag() }}</strong></td>
                             <td>{{ $value->phone }}</td>
                             <td>{{ $value->time }}</td>
                             <td>{{ $value->address }}</td>
-                            <td>{{ $value->addition }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="6">{{ $value->addition }}</td>
                         </tr>
                         </tbody>
                     @endforeach
@@ -87,7 +73,7 @@
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
     <script type="text/javascript">
 
-        let CSRF_TOKEN = '{{csrf_token()}}';
+        let CSRF_TOKEN = '{{ csrf_token() }}';
 
         $('.table-sortable').sortable({
             connectWith: '.table-sortable',
@@ -119,7 +105,7 @@
                         '_token': CSRF_TOKEN
                     },
                     success:function(data){
-                        console.log(data);
+                        //console.log(data);
                     },
                     error: function(data){
                         var errors = data.responseJSON;

@@ -15,6 +15,38 @@ class AdminController extends Controller
 
     public function index()
     {
+        /*$amo = new AmoController();
+        $amo->amo_auth();
+        $subdomain = env('AMO_SUBDOMAIN', '');
+        $link = 'https://' . $subdomain . '.amocrm.ru/private/api/v2/json/leads/set';
+        $success = $amo->getAmoLeads(142, 500, 1603238400, 1604102400);
+        $now = strtotime('now');
+        //dd($success);
+        foreach ($success['content']['response']['leads'] as $key => $item) {
+            $course = null;
+
+            foreach ($item['custom_fields'] as $field) {
+                if ($field['id'] === 456321) {
+                    $course = (int)$field['values'][0]['value'];
+                }
+            }
+
+            dump($key + 1, $item['name'], $item['price'], $course);
+
+            if ($course) {
+
+                $leads['request']['leads']['update'] = array(
+                    array(
+                        'id' => $item['id'],
+                        'last_modified' => $now,
+                        'price' => $course
+                    )
+                );
+
+                $amo->amo_post($link, 'POST', $leads);
+            }
+        }*/
+
         $week = Week::find(1);
 
         return view('admin.home', ['week' => $week]);
@@ -80,7 +112,9 @@ class AdminController extends Controller
 
     public function showDays()
     {
-        return view();
+        $orders = Order::where('active', true)->orderBy('name')->get();
+
+        return view('admin.days', ['orders' => $orders]);
     }
 
     public function incrementDay()

@@ -66,6 +66,26 @@ class Order extends Model
         return $colour_tag;
     }
 
+    public function getColourTd()
+    {
+        $td = '';
+
+        switch ($this->tag) {
+            case 'Select':
+                $td = 'class="table-success"';
+                break;
+            case 'Lite':
+                $td = 'class="table-warning"';
+                break;
+            case 'Daily':
+                $td = 'class="table-danger"';
+                break;
+
+        }
+
+        return $td;
+    }
+
     public function getStatus()
     {
         $now = Carbon::now()->format('Y-m-d');

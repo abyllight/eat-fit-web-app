@@ -15,20 +15,43 @@ class ReportController extends Controller
         $this->middleware('admin');
     }
 
-    public function index($date = null)
+    public function index()
     {
-        if (!$date) {
-            $date = Report::latest()->first()->created_at->format('Y-m-d');
-        }
+        $report = Report::latest()->first();
 
-        $reports = Report::whereDate('created_at', $date)->get()->groupBy('courier_id');
+        $date = $report ? $report->created_at->format('Y-m-d') : null;
 
-        return view('admin.reports', ['reports' => $reports]);
+        $reports = $this->getReports($date);
+
+        return view('admin.reports', ['reports' => $reports, 'date' => $date]);
     }
 
     public function filter(Request $request)
     {
-        return $this->index($request['date']);
+        $date = $request['date'];
+
+        if (!$date) {
+            return [];
+        }
+
+        $reports = $this->getReports($date);
+
+        return response()->json($reports);
+    }
+
+    public function getReports($date)
+    {
+        $reports = Report::whereDate('created_at', $date)->with(['user', 'order'])->get();
+
+        if ($reports) {
+            foreach ($reports as $report) {
+                $report->status = $report->getStatus();
+                $report->delivered = $report->getDeliveredAt();
+                $report->reported = $report->getReportedAt();
+            }
+        }
+
+        return $reports->groupBy('courier_id');
     }
 
     public function export($date = '2020-12-01')
@@ -113,7 +136,7 @@ class ReportController extends Controller
                         $value->order['yaddress'],
                         $value->payment,
                         $value->payment_method,
-                        $value->order['addition'],
+                        $value->comment,
                         $value->reported_at,
                         $value->delivered_at
                     ]

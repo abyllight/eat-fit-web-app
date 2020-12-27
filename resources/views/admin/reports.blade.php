@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
+<div class="container">
     <div class="row">
         @if (session('status'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -22,7 +22,7 @@
         @endif
     </div>
 
-    <div class="row mb-3 ml-2">
+    <div class="row mb-3">
         <input data-date-format="dd/mm/yyyy" id="datepicker" class="mr-3">
         <form class="form-inline" method="GET" action="{{ route('admin.reports.export') }}">
             @csrf
@@ -32,55 +32,14 @@
         </form>
     </div>
 
-    @if($reports->count() > 0)
-        <div class="row">
-        @foreach($reports as $key => $report)
-            <div>
-                <h3 class="mt-3">{{ $report[0]->user->first_name }} - {{ count($report) }}</h3>
-                <table class="table">
-                    <thead class="thead-light">
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Интервал</th>
-                            <th scope="col">Телефон</th>
-                            <th scope="col">Имя</th>
-                            <th scope="col">Адрес</th>
-                            <th scope="col">Оплата</th>
-                            <th scope="col">Тип</th>
-                            <th scope="col">Статус</th>
-                            <th scope="col">Факт.время</th>
-                            <th scope="col">Whatsapp</th>
-                        </tr>
-                    </thead>
+    <div class="row" id="table">
 
-                    @foreach($report as $v => $value)
-                        <tbody class="border-b border-dark">
-                            <tr>
-                                <th scope="row">{{ $v+1 }}</th>
-                                <td>{{ $value->order->time }}</td>
-                                <td>{{ $value->order->phone }}</td>
-                                <td>{{ $value->order->name }}</td>
-                                <td>{{ $value->order->yaddress }}</td>
-                                <td>{{ $value->payment }}</td>
-                                <td>{{ $value->payment_method }}</td>
-                                <td>asd</td>
-                                <td>{{ $value->reported_at }}</td>
-                                <td>{{ $value->delivered_at }}</td>
-                            </tr>
-                            <tr>
-                                <td colspan="10">{{ $value->comment }}</td>
-                            </tr>
-                        </tbody>
-                    @endforeach
-                </table>
-            </div>
-        @endforeach
     </div>
-    @else
-        <div class="row">
-            На эту дату отчетов не было
-        </div>
-    @endif
+
+    <div class="row" id="empty">
+
+    </div>
+
 </div>
 @endsection
 
@@ -94,37 +53,101 @@
             }
         });
 
-        $('#datepicker').datepicker({
-            weekStart: 1,
-            daysOfWeekHighlighted: "0",
-            autoclose: true,
-            todayHighlight: true,
-            clearBtn: true,
-            format: 'yyyy-mm-dd',
-            endDate: '2020-12-04'
-        });
+        function displayReport(data) {
+
+            if(data.length === 0) {
+                $('#empty').html('На эту дату отчетов не было');
+
+                return;
+            }
+
+            let html   = '';
+            let name   = '';
+            let header = '<table class="table table-bordered">'
+                + '<thead class="thead-light"><tr><th scope="col">#</th><th scope="col">Интервал</th><th scope="col">Телефон</th><th scope="col">Имя</th><th scope="col">Адрес</th><th scope="col">Оплата</th><th scope="col">Тип</th><th scope="col">Статус</th><th scope="col">Отчет</th><th scope="col">Whatsapp</th></tr></thead>';
+            let tbody  = '';
+
+            $.each(data ,function (index, value) {
+
+                let courier_name = value[0].user ? value[0].user.first_name : ''
+
+                name += '<h3 class="mb-3">' + courier_name + ' - [' + value.length + ']</h3>';
+
+                $.each(value, function (i, v) {
+
+                    tbody += '<tbody>'
+                            + '<tr>'
+                                + '<td>' + (i + 1) + '</td>'
+                                + '<td>' + v.order.time + '</td>'
+                                + '<td>' + v.order.phone + '</td>'
+                                + '<td>' + v.order.name + '</td>'
+                                + '<td>' + v.order.yaddress + '</td>'
+                                + '<td>' + v.payment + '</td>'
+                                + '<td>' + v.payment_method + '</td>'
+                                + v.status
+                                + '<td>' + v.reported + '</td>'
+                                + '<td>' + v.delivered + '</td>'
+                            + '</tr>'
+                            + '<tr>'
+                                + '<td colspan="10">' + v.comment + '</td>'
+                            + '</tr>'
+                            + '</tbody>';
+                })
+
+                html += name + header + tbody + '</table>';
+
+                name  = '';
+                tbody = '';
+            });
+
+            return html;
+        }
+
+        $(document).ready(function () {
+
+            var last_date = {!! json_encode($date) !!};
+            var reports   = {!! json_encode($reports) !!};
+
+            $('#table').html(displayReport(reports));
+
+            $('#datepicker').datepicker({
+                weekStart: 1,
+                daysOfWeekHighlighted: "0",
+                autoclose: true,
+                todayHighlight: true,
+                clearBtn: true,
+                format: 'yyyy-mm-dd',
+                endDate: last_date,
+                defaultViewDate: last_date
+            });
+
+            $('#datepicker').datepicker("setDate", last_date);
 
 
-        $('#datepicker').change(function(){
+            $('#datepicker').change(function(){
 
-            let date = $(this).val();
-            console.log(date)
+                let date = $(this).val();
 
-            $.ajax({
-                type:'POST',
-                url:'{{ route('admin.reports.filter') }}',
-                data:{
-                    date: date
-                },
-                success:function(data){
-                    /*location.reload()*/
-                    console.log(data)
-                },
-                error: function(data){
-                    var errors = data.responseJSON;
-                    console.log(errors);
-                }
+                $.ajax({
+                    type:'POST',
+                    url:'{{ route('admin.reports.filter') }}',
+                    data:{
+                        date: date
+                    },
+                    success:function(data){
+                        $('#empty').html('');
+                        $('#table').html('');
+                        $('#table').html(displayReport(data));
+                    },
+                    error: function(data){
+                        var errors = data.responseJSON;
+                        console.log(errors);
+                    }
+                });
             });
         });
+
+
+
     </script>
 @endsection

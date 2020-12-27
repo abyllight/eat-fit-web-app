@@ -3,6 +3,25 @@
 @section('content')
 <div class="container-fluid">
     <div class="row">
+        @if (session('status'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('status') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+    </div>
+    <div class="row">
         @foreach($orders as $key => $order)
             <div class="col-sm-12 col-md-4 col-lg-3 my-2">
                 <div class="card" id="o{{ $order->id }}">
@@ -44,11 +63,11 @@
 
                     </div>
 
-                    <div class="card-footer @if($order->hasReportToday() && $order->hasDeliveredToday()) bg-success @else bg-secondary @endif">
-                        <small class="text-white mr-5"> Доставлено:
+                    <div class="card-footer @if($order->hasReportToday() && $order->hasDeliveredToday()) bg-success @endif">
+                        <small class="mr-5 @if($order->hasReportToday() && $order->hasDeliveredToday()) text-white @endif"> Доставлено:
                             {!! $order->hasDeliveredToday() ? '<span class="badge badge-light">OK</span>' : '' !!}
                         </small>
-                        <small class="text-white"> Отчет:
+                        <small class="@if($order->hasReportToday() && $order->hasDeliveredToday()) text-white @endif"> Отчет:
                             {!! $order->hasReportToday() ? '<span class="badge badge-light">OK</span>' : '' !!}
                         </small>
                     </div>

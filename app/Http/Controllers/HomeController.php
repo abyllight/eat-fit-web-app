@@ -38,81 +38,72 @@ class HomeController extends Controller
 
     public function setStatusToDelivered(Request $request)
     {
-        dd('asd');
+        dd('asd', $request['amo']);
+        /*
+         * Обновление сделки
+         * Переместить в воронку Доставлено
+         * и присвоить имя, телефон курьера
+         * */
+
+        $user      = Auth::user();
         $amo_id    = $request['amo'];
         $now       = strtotime('now');
         $subdomain = env('AMO_SUBDOMAIN', '');
         $link      = 'https://' . $subdomain . '.amocrm.ru/private/api/v2/json/leads/set';
 
-        /*$leads['request']['leads']['update'] = array(
+        $leads['request']['leads']['update'] = array(
             array(
-                'id' => $amo_id,
+                'id'            => $amo_id,
                 'last_modified' => $now,
-                'status_id'=>142,
-                'price'=>602041,
-                'responsible_user_id'=>109999,
-                'custom_fields'=>array(
+                'status_id'     => 27248140, # Доставлено
+                'custom_fields' => array(
                     array(
-                        'id'=>427493, # id поля типа numeric
-                        'values'=>array(
+                        'id'     => 489499, # ТТМ телефон
+                        'values' => array(
                             array(
-                                'value'=>65535 # сюда передается только числовое значение (float, int). Значения float передаются с точкой, например: 27.3
+                                'value' => $user->phone
                             )
                         )
                     ),
                     array(
-                        'id'=>427494, # id поля типа checkbox
-                        'values'=>array(
+                        'id'     => 489497, # ТТМ имя
+                        'values' => array(
                             array(
-                                'value'=>1 # допустимые значения 1 или 0
+                                'value' => $user->first_name
                             )
-                        )
-                    ),
-                    array(
-                        'id'=>427495, #id поля типа select
-                        'values'=>array(
-                            array(
-                                'value'=>1240662 # одно из enum значений
-                            )
-                        )
-                    )
-                )
-            ),
-            array(
-                'id'=>3698754,
-                'name'=>'Keep Calm',
-                //'date_create'=>1298904164, //optional
-                'last_modified'=>1375110129,
-                'status_id'=>7087607,
-                'price'=>1008200,
-                'responsible_user_id'=>109999,
-                'custom_fields'=>array(
-                    array(
-                        #Нестандартное дополнительное поле типа "мультисписок", которое мы создали
-                        'id'=>426106,
-                        'values'=>array(
-                            1237755,
-                            1237757
                         )
                     )
                 )
             )
-        );*/
+        );
 
-        $user_id  = Auth::user()->id;
+        $amo = new AmoController();
+
+        if ($amo->amo_auth()) {
+
+            $amo->amo_curl($link, 'POST', $leads);
+
+        }else {
+            return redirect()->route('home')->with('error', 'Ошибка в авторизации АМО');
+        }
+
+        /*
+         * Создать отчет
+         * */
+
         $order_id = $request['order'];
 
-        $report  = Report::where('order_id',  $order_id)
-            ->where('courier_id', $user_id)
+        $report = Report::where('order_id',  $order_id)
+            ->where('courier_id', $user->id)
             ->whereDate('created_at', Carbon::today()->toDateString())
             ->first();
 
-        $created_at  = $report ? $report->created_at : Carbon::now();
+        $created_at = $report ? $report->created_at : Carbon::now();
 
         Report::updateOrCreate(
             [
                 'order_id'   => $order_id,
-                'courier_id' => $user_id,
+                'courier_id' => $user->id,
                 'created_at' => $created_at
             ],
             [
@@ -120,7 +111,7 @@ class HomeController extends Controller
             ]
         );
 
-        return redirect()->to('home/#o' . $order_id);
+        return redirect()->to('home/#o' . $order_id)->with('status', 'Сообщение отправлено!');
     }
 
     public function showReport($order_id)
@@ -160,6 +151,6 @@ class HomeController extends Controller
             ]
         );
 
-        return redirect()->to('home/#o' . $id);
+        return redirect()->to('home/#o' . $id)->with('status', 'Отчет отправлен');
     }
 }
